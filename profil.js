@@ -33,6 +33,114 @@ function confirmReset() {
   window.location.href = 'index.html';
 }
 
+// ===== PIN KEZELÉS (profil oldalon) =====
+
+function openChangePinModal() {
+  document.getElementById('pin-old').value = '';
+  document.getElementById('pin-new1').value = '';
+  document.getElementById('pin-new2').value = '';
+  document.getElementById('pin-change-error').textContent = '';
+  document.getElementById('pin-change-error').style.display = 'none';
+
+  const p = getActiveProfile();
+  const hasPin = p && !!p.pinHash;
+  document.getElementById('pin-old-row').style.display = hasPin ? 'block' : 'none';
+  document.getElementById('pin-change-title').textContent = hasPin ? '🔒 PIN módosítása' : '🔒 PIN beállítása';
+  document.getElementById('pin-remove-btn').style.display = hasPin ? 'inline-block' : 'none';
+
+  document.getElementById('pin-change-modal').style.display = 'flex';
+  setTimeout(() => (hasPin ? document.getElementById('pin-old') : document.getElementById('pin-new1')).focus(), 50);
+}
+
+function closePinChangeModal() {
+  document.getElementById('pin-change-modal').style.display = 'none';
+}
+
+async function submitPinChange() {
+  const p = getActiveProfile();
+  if (!p) return;
+
+  const errEl = document.getElementById('pin-change-error');
+  const oldPin = document.getElementById('pin-old').value;
+  const newPin1 = document.getElementById('pin-new1').value;
+  const newPin2 = document.getElementById('pin-new2').value;
+
+  // Ha volt régi PIN, ellenőrzés
+  if (p.pinHash) {
+    if (!/^\d{4}$/.test(oldPin)) {
+      errEl.textContent = 'Add meg a jelenlegi PIN-t (4 szám)!';
+      errEl.style.display = 'block'; return;
+    }
+    const oldHash = await hashPin(oldPin);
+    if (oldHash !== p.pinHash) {
+      errEl.textContent = 'Hibás jelenlegi PIN!';
+      errEl.style.display = 'block'; return;
+    }
+  }
+
+  if (!/^\d{4}$/.test(newPin1)) {
+    errEl.textContent = 'Az új PIN pontosan 4 számjegy legyen!';
+    errEl.style.display = 'block'; return;
+  }
+  if (newPin1 !== newPin2) {
+    errEl.textContent = 'A két új PIN nem egyezik!';
+    errEl.style.display = 'block'; return;
+  }
+
+  p.pinHash = await hashPin(newPin1);
+  saveActiveProfile(p);
+  closePinChangeModal();
+  renderPinStatus();
+  showToast('PIN sikeresen beállítva! 🔒');
+}
+
+async function removePin() {
+  const p = getActiveProfile();
+  if (!p || !p.pinHash) return;
+
+  const errEl = document.getElementById('pin-change-error');
+  const oldPin = document.getElementById('pin-old').value;
+
+  if (!/^\d{4}$/.test(oldPin)) {
+    errEl.textContent = 'Add meg a jelenlegi PIN-t a törléshez!';
+    errEl.style.display = 'block'; return;
+  }
+  const oldHash = await hashPin(oldPin);
+  if (oldHash !== p.pinHash) {
+    errEl.textContent = 'Hibás PIN!';
+    errEl.style.display = 'block'; return;
+  }
+
+  p.pinHash = null;
+  saveActiveProfile(p);
+  closePinChangeModal();
+  renderPinStatus();
+  showToast('PIN eltávolítva. 🔓');
+}
+
+function renderPinStatus() {
+  const p = getActiveProfile();
+  const el = document.getElementById('pin-status');
+  if (!el) return;
+  if (p && p.pinHash) {
+    el.innerHTML = '<span class="pin-on">🔒 PIN védelem aktív</span>';
+  } else {
+    el.innerHTML = '<span class="pin-off">🔓 Nincs PIN védelem</span>';
+  }
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.className = 'toast show';
+  setTimeout(() => { t.className = 'toast'; }, 2800);
+}
+
 function renderAll() {
   const p = getActiveProfile();
   if (!p) { window.location.href = 'index.html'; return; }
@@ -67,6 +175,7 @@ function renderAll() {
 
   renderCatStats(p.catStats);
   renderHistory(p.history);
+  renderPinStatus();
 }
 
 function renderRankTimeline(currentXP) {

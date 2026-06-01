@@ -58,6 +58,14 @@
   </div>
 
   <div class="section-card">
+    <h2 class="section-heading">🔒 Biztonság</h2>
+    <div class="pin-section-row">
+      <div id="pin-status"><span class="pin-off">🔓 Nincs PIN védelem</span></div>
+      <button class="btn-change-pin" onclick="openChangePinModal()">PIN beállítása / módosítása</button>
+    </div>
+  </div>
+
+  <div class="section-card">
     <h2 class="section-heading">📂 Kategóriánként</h2>
     <div class="cat-list" id="cat-list"></div>
   </div>
@@ -72,5 +80,27 @@
 </div>
 <script src="profiles.js"></script>
 <script src="profil.js"></script>
+
+<!-- PIN MÓDOSÍTÁS MODAL -->
+<div id="pin-change-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h3 id="pin-change-title">🔒 PIN beállítása</h3>
+    <div id="pin-old-row">
+      <div class="modal-label">Jelenlegi PIN</div>
+      <input type="password" id="pin-old" class="modal-input" maxlength="4" inputmode="numeric" placeholder="Jelenlegi 4 jegyű PIN" />
+    </div>
+    <div class="modal-label">Új PIN (4 szám)</div>
+    <input type="password" id="pin-new1" class="modal-input" maxlength="4" inputmode="numeric" placeholder="Új PIN" />
+    <div class="modal-label">Új PIN megerősítése</div>
+    <input type="password" id="pin-new2" class="modal-input" maxlength="4" inputmode="numeric" placeholder="Új PIN újra"
+      onkeydown="if(event.key==='Enter') submitPinChange()" />
+    <div id="pin-change-error" class="modal-error" style="display:none;"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closePinChangeModal()">Mégse</button>
+      <button id="pin-remove-btn" class="btn-remove-pin" onclick="removePin()" style="display:none;">🗑 PIN törlése</button>
+      <button class="modal-submit" onclick="submitPinChange()">Mentés ✔</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

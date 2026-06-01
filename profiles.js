@@ -64,10 +64,21 @@ function getAllProfiles() {
   return Object.values(store.profiles).map(ensureProfileDefaults);
 }
 
-function createProfile(name, avatar) {
+// ===== PIN HASH (egyszerű, böngészőben futó) =====
+
+async function hashPin(pin) {
+  const msgBuffer = new TextEncoder().encode('hvi_salt_2024_' + pin);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function createProfile(name, avatar, pinRaw) {
   const id = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+  const pinHash = pinRaw ? await hashPin(pinRaw) : null;
   const p = ensureProfileDefaults({
     id, name, avatar,
+    pinHash,
     createdAt: new Date().toLocaleDateString('hu-HU'),
   });
   const store = loadStore();

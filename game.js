@@ -53,12 +53,13 @@ function renderPickerProfiles() {
   profiles.forEach(p => {
     const rank = getRank(p.totalXP);
     const isActive = p.id === activeId;
+    const hasPin = !!p.pinHash;
     const card = document.createElement('div');
     card.className = 'profile-pick-card' + (isActive ? ' active-profile' : '');
     card.innerHTML = `
       <div class="pick-avatar">${p.avatar || rank.icon}</div>
       <div class="pick-info">
-        <div class="pick-name">${escapeHtml(p.name || 'Névtelen')}</div>
+        <div class="pick-name">${escapeHtml(p.name || 'Névtelen')} ${hasPin ? '<span class="pin-lock">🔒</span>' : ''}</div>
         <div class="pick-rank">${rank.icon} ${rank.name}</div>
         <div class="pick-xp">${p.totalXP} XP · ${p.gamesPlayed} meccs</div>
       </div>
@@ -71,7 +72,94 @@ function renderPickerProfiles() {
   });
 }
 
+// PIN ellenőrzés állapot
+let pinCheckId = null;
+let pinAttempts = 0;
+let pinLockUntil = 0;
+
 function selectProfile(id) {
+  const store = loadStore();
+  const raw = store.profiles[id];
+  if (!raw) return;
+
+  if (!raw.pinHash) {
+    // Nincs PIN – egyből belép
+    _doSelectProfile(id);
+    return;
+  }
+
+  // Van PIN – megnyitjuk a PIN modal-t
+  pinCheckId = id;
+  pinAttempts = 0;
+  openPinModal(raw.name || 'Névtelen', false);
+}
+
+function openPinModal(name, isLocked) {
+  document.getElementById('pin-modal-title').textContent = '🔒 ' + escapeHtml(name);
+  document.getElementById('pin-input').value = '';
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('pin-error').style.display = 'none';
+  const lockMsg = document.getElementById('pin-lock-msg');
+
+  if (isLocked) {
+    const secs = Math.ceil((pinLockUntil - Date.now()) / 1000);
+    lockMsg.textContent = `Túl sok hibás próbálkozás. Várj ${secs} másodpercet.`;
+    lockMsg.style.display = 'block';
+    document.getElementById('pin-submit-btn').disabled = true;
+    setTimeout(() => {
+      lockMsg.style.display = 'none';
+      document.getElementById('pin-submit-btn').disabled = false;
+    }, pinLockUntil - Date.now());
+  } else {
+    lockMsg.style.display = 'none';
+    document.getElementById('pin-submit-btn').disabled = false;
+  }
+
+  document.getElementById('pin-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('pin-input').focus(), 50);
+}
+
+function closePinModal() {
+  document.getElementById('pin-modal').style.display = 'none';
+  pinCheckId = null;
+}
+
+async function submitPin() {
+  if (Date.now() < pinLockUntil) return;
+
+  const pin = document.getElementById('pin-input').value;
+  const errEl = document.getElementById('pin-error');
+
+  if (!/^\d{4}$/.test(pin)) {
+    errEl.textContent = 'Adj meg egy 4 jegyű PIN-t!';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const store = loadStore();
+  const raw = store.profiles[pinCheckId];
+  if (!raw) { closePinModal(); return; }
+
+  const entered = await hashPin(pin);
+  if (entered === raw.pinHash) {
+    closePinModal();
+    _doSelectProfile(pinCheckId);
+  } else {
+    pinAttempts++;
+    if (pinAttempts >= 3) {
+      pinLockUntil = Date.now() + 30000;
+      pinAttempts = 0;
+      openPinModal(raw.name || 'Névtelen', true);
+    } else {
+      errEl.textContent = `Hibás PIN! Még ${3 - pinAttempts} próbálkozás maradt.`;
+      errEl.style.display = 'block';
+      document.getElementById('pin-input').value = '';
+      document.getElementById('pin-input').focus();
+    }
+  }
+}
+
+function _doSelectProfile(id) {
   setActiveProfile(id);
   showScreen('start-screen');
   renderProfile();
@@ -93,6 +181,9 @@ let selectedAvatar = AVATARS[0];
 function openNewProfileModal() {
   selectedAvatar = AVATARS[0];
   document.getElementById('new-profile-name').value = '';
+  document.getElementById('new-profile-pin').value = '';
+  document.getElementById('new-profile-pin2').value = '';
+  document.getElementById('pin-match-error').style.display = 'none';
   renderAvatarGrid();
   document.getElementById('new-profile-modal').style.display = 'flex';
   setTimeout(() => document.getElementById('new-profile-name').focus(), 50);
@@ -123,16 +214,45 @@ function renderAvatarGrid() {
   });
 }
 
-function submitNewProfile() {
+async function submitNewProfile() {
   const nameInput = document.getElementById('new-profile-name');
+  const pin1 = document.getElementById('new-profile-pin').value;
+  const pin2 = document.getElementById('new-profile-pin2').value;
+  const errEl = document.getElementById('pin-match-error');
   const name = nameInput.value.trim();
+
   if (!name) {
     nameInput.focus();
     nameInput.style.borderColor = '#f87171';
     setTimeout(() => { nameInput.style.borderColor = ''; }, 1500);
     return;
   }
-  createProfile(name, selectedAvatar);
+
+  // PIN validáció
+  if (pin1 || pin2) {
+    if (!/^\d{4}$/.test(pin1)) {
+      errEl.textContent = 'A PIN pontosan 4 számjegy legyen!';
+      errEl.style.display = 'block';
+      document.getElementById('new-profile-pin').focus();
+      return;
+    }
+    if (pin1 !== pin2) {
+      errEl.textContent = 'A két PIN nem egyezik!';
+      errEl.style.display = 'block';
+      document.getElementById('new-profile-pin2').focus();
+      return;
+    }
+  }
+  errEl.style.display = 'none';
+
+  const submitBtn = document.getElementById('modal-submit-btn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Létrehozás...';
+
+  await createProfile(name, selectedAvatar, pin1 || null);
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Létrehozás ✔';
   closeNewProfileModal();
   showScreen('start-screen');
   renderProfile();
@@ -373,9 +493,41 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-// ===================== INIT =====================
+function updatePinDots() {
+  const val = document.getElementById('pin-input').value;
+  document.querySelectorAll('#pin-dots .pin-dot').forEach((dot, i) => {
+    dot.classList.toggle('filled', i < val.length);
+  });
+  // Auto-submit ha 4 szám
+  if (val.length === 4) setTimeout(submitPin, 200);
+}
+
+function buildNumpad() {
+  const pad = document.getElementById('pin-numpad');
+  if (!pad) return;
+  pad.innerHTML = '';
+  [1,2,3,4,5,6,7,8,9,'',0,'⌫'].forEach(k => {
+    const btn = document.createElement('button');
+    btn.className = 'numpad-btn' + (k === '' ? ' numpad-empty' : '');
+    btn.textContent = k;
+    btn.type = 'button';
+    if (k !== '') {
+      btn.onclick = () => {
+        const inp = document.getElementById('pin-input');
+        if (k === '⌫') {
+          inp.value = inp.value.slice(0, -1);
+        } else if (inp.value.length < 4) {
+          inp.value += k;
+        }
+        updatePinDots();
+      };
+    }
+    pad.appendChild(btn);
+  });
+}
 
 window.addEventListener('DOMContentLoaded', () => {
+  buildNumpad();
   const active = getActiveProfile();
   if (!active) {
     renderPickerProfiles();

@@ -141,9 +141,38 @@
       onkeydown="if(event.key==='Enter') submitNewProfile()" />
     <div class="modal-label">Válassz avatart</div>
     <div class="avatar-grid" id="avatar-grid"></div>
+    <div class="modal-label">PIN kód <span style="color:rgba(255,255,255,.4);font-weight:400;text-transform:none;letter-spacing:0">(opcionális, 4 szám – védi a profilodat)</span></div>
+    <div class="pin-row">
+      <input type="password" id="new-profile-pin" class="modal-input pin-input-half" maxlength="4" inputmode="numeric" pattern="\d{4}" placeholder="PIN (pl. 1234)" />
+      <input type="password" id="new-profile-pin2" class="modal-input pin-input-half" maxlength="4" inputmode="numeric" pattern="\d{4}" placeholder="PIN megerősítés"
+        onkeydown="if(event.key==='Enter') submitNewProfile()" />
+    </div>
+    <div id="pin-match-error" class="modal-error" style="display:none;"></div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeNewProfileModal()">Mégse</button>
-      <button class="modal-submit" onclick="submitNewProfile()">Létrehozás ✔</button>
+      <button class="modal-submit" id="modal-submit-btn" onclick="submitNewProfile()">Létrehozás ✔</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PIN ELLENŐRZŐ MODAL ===== -->
+<div id="pin-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box pin-modal-box">
+    <div class="pin-modal-avatar" id="pin-modal-avatar">🔒</div>
+    <h3 id="pin-modal-title">PIN megadása</h3>
+    <p class="pin-modal-sub">Add meg a 4 jegyű PIN kódot a belépéshez.</p>
+    <div id="pin-lock-msg" class="pin-lock-msg" style="display:none;"></div>
+    <div class="pin-dots" id="pin-dots">
+      <span class="pin-dot"></span><span class="pin-dot"></span>
+      <span class="pin-dot"></span><span class="pin-dot"></span>
+    </div>
+    <input type="password" id="pin-input" class="pin-hidden-input" maxlength="4" inputmode="numeric" pattern="\d{4}"
+      oninput="updatePinDots()" onkeydown="if(event.key==='Enter') submitPin()" autocomplete="off" />
+    <div class="pin-numpad" id="pin-numpad"></div>
+    <div id="pin-error" class="modal-error" style="display:none;"></div>
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="modal-cancel" onclick="closePinModal()">Mégse</button>
+      <button class="modal-submit" id="pin-submit-btn" onclick="submitPin()">Belépés 🔓</button>
     </div>
   </div>
 </div>
