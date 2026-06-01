@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil – Hazugság vagy Igazság?</title>
+  <link rel="stylesheet" href="profil.css" />
+</head>
+<body>
+<div class="page">
+
+  <header class="p-header">
+    <button class="back-btn" onclick="window.location.href='index.html'">← Vissza</button>
+    <h1 id="profil-header-title">👤 Profilom</h1>
+    <button class="reset-btn" onclick="confirmReset()">🗑 Törlés</button>
+  </header>
+
+  <div class="name-card">
+    <div class="avatar-big" id="avatar-big">🌱</div>
+    <div class="name-area">
+      <div id="name-display" class="name-display" onclick="editName()">
+        <span id="name-text">Névtelen Játékos</span>
+        <span class="edit-hint">✏️</span>
+      </div>
+      <div id="name-edit" class="name-edit" style="display:none;">
+        <input type="text" id="name-input" maxlength="24" placeholder="Írd be a neved..."
+          onkeydown="if(event.key==='Enter') saveName()" />
+        <button onclick="saveName()">✔</button>
+        <button onclick="cancelName()">✖</button>
+      </div>
+      <div class="rank-label" id="rank-label">🌱 Kezdő</div>
+    </div>
+  </div>
+
+  <div class="xp-section">
+    <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xp-bar-fill"></div></div>
+    <div class="xp-bar-labels">
+      <span id="xp-current-label">0 XP</span>
+      <span id="xp-next-label">Következő: 100 XP</span>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2 class="section-heading">🏅 Rangok</h2>
+    <div class="rank-timeline" id="rank-timeline"></div>
+  </div>
+
+  <div class="section-card">
+    <h2 class="section-heading">📊 Statisztikák</h2>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-icon">🎮</div><div class="stat-val" id="st-games">0</div><div class="stat-lbl">Játszott meccs</div></div>
+      <div class="stat-box"><div class="stat-icon">✅</div><div class="stat-val green" id="st-correct">0</div><div class="stat-lbl">Helyes válasz</div></div>
+      <div class="stat-box"><div class="stat-icon">❌</div><div class="stat-val red" id="st-wrong">0</div><div class="stat-lbl">Helytelen válasz</div></div>
+      <div class="stat-box"><div class="stat-icon">🎯</div><div class="stat-val blue" id="st-acc">0%</div><div class="stat-lbl">Pontosság</div></div>
+      <div class="stat-box"><div class="stat-icon">🔥</div><div class="stat-val orange" id="st-streak">0</div><div class="stat-lbl">Legjobb sorozat</div></div>
+      <div class="stat-box"><div class="stat-icon">⭐</div><div class="stat-val purple" id="st-xp">0</div><div class="stat-lbl">Összes XP</div></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2 class="section-heading">📂 Kategóriánként</h2>
+    <div class="cat-list" id="cat-list"></div>
+  </div>
+
+  <div class="section-card">
+    <h2 class="section-heading">🕓 Legutóbbi meccsek</h2>
+    <div class="history-list" id="history-list">
+      <p class="empty-msg">Még nem játszottál egyetlen meccset sem.</p>
+    </div>
+  </div>
+
+</div>
+<script src="profiles.js"></script>
+<script src="profil.js"></script>
+</body>
+</html>

@@ -9,8 +9,29 @@
 <body>
 <div class="container">
 
+  <!-- ===== PROFIL VÁLASZTÓ ===== -->
+  <div id="picker-screen" class="screen">
+    <div class="picker-hero">
+      <div class="menu-logo">🤔</div>
+      <h2>Ki játszik?</h2>
+      <p>Válassz egy profilt, vagy hozz létre újat!</p>
+    </div>
+    <div id="profiles-list"></div>
+    <button class="btn-new-profile" onclick="openNewProfileModal()">➕ Új profil létrehozása</button>
+  </div>
+
   <!-- ===== FŐMENÜ ===== -->
-  <div id="start-screen" class="screen active">
+  <div id="start-screen" class="screen">
+
+    <!-- AKTÍV PROFIL SÁV -->
+    <div class="active-profile-bar">
+      <span class="ap-avatar" id="active-avatar">🦊</span>
+      <div class="ap-info">
+        <div class="ap-name" id="active-name">Játékos</div>
+        <div class="ap-rank" id="active-rank">🌱 Kezdő</div>
+      </div>
+      <button class="btn-switch" onclick="showPicker()">⇄ Váltás</button>
+    </div>
 
     <div class="menu-hero">
       <div class="menu-logo">🤔</div>
@@ -19,7 +40,7 @@
     </div>
 
     <!-- PROFIL KÁRTYA -->
-    <div class="profile-card" id="profile-card">
+    <div class="profile-card">
       <div class="profile-left">
         <div class="profile-avatar" id="profile-avatar">🧠</div>
         <div class="profile-info">
@@ -31,26 +52,11 @@
         </div>
       </div>
       <div class="profile-stats-row">
-        <div class="pstat">
-          <span class="pstat-num" id="ps-games">0</span>
-          <span class="pstat-label">Meccs</span>
-        </div>
-        <div class="pstat">
-          <span class="pstat-num green" id="ps-correct">0</span>
-          <span class="pstat-label">Helyes</span>
-        </div>
-        <div class="pstat">
-          <span class="pstat-num blue" id="ps-accuracy">0%</span>
-          <span class="pstat-label">Pontosság</span>
-        </div>
-        <div class="pstat">
-          <span class="pstat-num yellow" id="ps-streak">0</span>
-          <span class="pstat-label">Legjobb sor</span>
-        </div>
-        <div class="pstat">
-          <span class="pstat-num purple" id="ps-xp">0</span>
-          <span class="pstat-label">Össz XP</span>
-        </div>
+        <div class="pstat"><span class="pstat-num" id="ps-games">0</span><span class="pstat-label">Meccs</span></div>
+        <div class="pstat"><span class="pstat-num green" id="ps-correct">0</span><span class="pstat-label">Helyes</span></div>
+        <div class="pstat"><span class="pstat-num blue" id="ps-accuracy">0%</span><span class="pstat-label">Pontosság</span></div>
+        <div class="pstat"><span class="pstat-num yellow" id="ps-streak">0</span><span class="pstat-label">Legjobb sor</span></div>
+        <div class="pstat"><span class="pstat-num purple" id="ps-xp">0</span><span class="pstat-label">Össz XP</span></div>
       </div>
     </div>
 
@@ -58,21 +64,11 @@
     <div class="menu-section">
       <h3 class="section-title">📂 Kategória</h3>
       <div class="option-grid" id="category-grid">
-        <button class="option-card selected" data-value="all" onclick="selectOption('category-grid',this)">
-          <span class="opt-icon">🌍</span><span class="opt-label">Minden</span>
-        </button>
-        <button class="option-card" data-value="science" onclick="selectOption('category-grid',this)">
-          <span class="opt-icon">🔬</span><span class="opt-label">Tudomány</span>
-        </button>
-        <button class="option-card" data-value="history" onclick="selectOption('category-grid',this)">
-          <span class="opt-icon">📜</span><span class="opt-label">Történelem</span>
-        </button>
-        <button class="option-card" data-value="nature" onclick="selectOption('category-grid',this)">
-          <span class="opt-icon">🌿</span><span class="opt-label">Természet</span>
-        </button>
-        <button class="option-card" data-value="fun" onclick="selectOption('category-grid',this)">
-          <span class="opt-icon">😄</span><span class="opt-label">Érdekességek</span>
-        </button>
+        <button class="option-card selected" data-value="all" onclick="selectOption('category-grid',this)"><span class="opt-icon">🌍</span><span class="opt-label">Minden</span></button>
+        <button class="option-card" data-value="science" onclick="selectOption('category-grid',this)"><span class="opt-icon">🔬</span><span class="opt-label">Tudomány</span></button>
+        <button class="option-card" data-value="history" onclick="selectOption('category-grid',this)"><span class="opt-icon">📜</span><span class="opt-label">Történelem</span></button>
+        <button class="option-card" data-value="nature" onclick="selectOption('category-grid',this)"><span class="opt-icon">🌿</span><span class="opt-label">Természet</span></button>
+        <button class="option-card" data-value="fun" onclick="selectOption('category-grid',this)"><span class="opt-icon">😄</span><span class="opt-label">Érdekességek</span></button>
       </div>
     </div>
 
@@ -80,23 +76,16 @@
     <div class="menu-section">
       <h3 class="section-title">⚡ Nehézség</h3>
       <div class="option-grid" id="difficulty-grid">
-        <button class="option-card selected" data-value="all" onclick="selectOption('difficulty-grid',this)">
-          <span class="opt-icon">🌍</span><span class="opt-label">Minden szint</span>
-        </button>
-        <button class="option-card diff-easy" data-value="easy" onclick="selectOption('difficulty-grid',this)">
-          <span class="opt-icon">😊</span><span class="opt-label">Könnyű</span><span class="opt-sub">Közismert tények</span>
-        </button>
-        <button class="option-card diff-medium" data-value="medium" onclick="selectOption('difficulty-grid',this)">
-          <span class="opt-icon">🤔</span><span class="opt-label">Közepes</span><span class="opt-sub">Kicsit trükkös</span>
-        </button>
-        <button class="option-card diff-hard" data-value="hard" onclick="selectOption('difficulty-grid',this)">
-          <span class="opt-icon">🔥</span><span class="opt-label">Nehéz</span><span class="opt-sub">Igazi kihívás</span>
-        </button>
+        <button class="option-card selected" data-value="all" onclick="selectOption('difficulty-grid',this)"><span class="opt-icon">🌍</span><span class="opt-label">Minden szint</span></button>
+        <button class="option-card diff-easy" data-value="easy" onclick="selectOption('difficulty-grid',this)"><span class="opt-icon">😊</span><span class="opt-label">Könnyű</span><span class="opt-sub">Közismert tények</span></button>
+        <button class="option-card diff-medium" data-value="medium" onclick="selectOption('difficulty-grid',this)"><span class="opt-icon">🤔</span><span class="opt-label">Közepes</span><span class="opt-sub">Kicsit trükkös</span></button>
+        <button class="option-card diff-hard" data-value="hard" onclick="selectOption('difficulty-grid',this)"><span class="opt-icon">🔥</span><span class="opt-label">Nehéz</span><span class="opt-sub">Igazi kihívás</span></button>
       </div>
     </div>
 
     <button class="btn btn-play" onclick="startGame()">▶ Játék indítása</button>
-    <div class="menu-footer">🎯 <strong id="q-count-preview">120</strong> kérdés elérhető</div>
+    <button class="btn btn-profile" onclick="window.location.href='profil.html'">👤 Részletes profil megtekintése</button>
+    <div class="menu-footer">🎯 <strong id="q-count-preview">300</strong> kérdés elérhető</div>
   </div>
 
   <!-- ===== JÁTÉK KÉPERNYŐ ===== -->
@@ -142,7 +131,25 @@
   </div>
 
 </div>
+
+<!-- ===== ÚJ PROFIL MODAL ===== -->
+<div id="new-profile-modal" class="modal-overlay" style="display:none;" onclick="modalOverlayClick(event)">
+  <div class="modal-box">
+    <h3>✨ Új profil létrehozása</h3>
+    <div class="modal-label">Neved (max. 24 karakter)</div>
+    <input type="text" id="new-profile-name" class="modal-input" maxlength="24" placeholder="Írd be a neved..."
+      onkeydown="if(event.key==='Enter') submitNewProfile()" />
+    <div class="modal-label">Válassz avatart</div>
+    <div class="avatar-grid" id="avatar-grid"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeNewProfileModal()">Mégse</button>
+      <button class="modal-submit" onclick="submitNewProfile()">Létrehozás ✔</button>
+    </div>
+  </div>
+</div>
+
 <script src="questions.js"></script>
+<script src="profiles.js"></script>
 <script src="game.js"></script>
 </body>
 </html>

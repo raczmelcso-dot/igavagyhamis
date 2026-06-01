@@ -160,6 +160,18 @@ body {
 .btn-play:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(99,102,241,.5); }
 .btn-play:active { transform: translateY(0); }
 
+.btn-profile {
+  width: 100%; padding: 13px;
+  font-size: .95rem; font-weight: 700;
+  border: 1px solid rgba(167,139,250,.4);
+  border-radius: 16px;
+  background: rgba(167,139,250,.1);
+  color: #c4b5fd; cursor: pointer;
+  transition: background .2s, transform .15s;
+  margin-bottom: 12px;
+}
+.btn-profile:hover { background: rgba(167,139,250,.2); transform: translateY(-1px); }
+
 .menu-footer { text-align: center; color: rgba(255,255,255,.38); font-size: .82rem; }
 .menu-footer strong { color: rgba(255,255,255,.65); }
 
@@ -325,3 +337,118 @@ body {
   .profile-stats-row { gap: 2px; }
   .pstat-num { font-size: 1.05rem; }
 }
+
+/* ===== PICKER SCREEN ===== */
+.picker-hero { text-align:center; padding:28px 0 20px; }
+.picker-hero h2 { font-size:1.7rem; font-weight:900; margin-bottom:6px; }
+.picker-hero p { color:rgba(255,255,255,.5); font-size:.95rem; }
+
+#profiles-list { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+
+.profile-pick-card {
+  display:flex; align-items:center; gap:14px;
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12);
+  border-radius:18px; padding:14px 16px; cursor:pointer;
+  transition:all .2s;
+}
+.profile-pick-card:hover { background:rgba(255,255,255,.12); border-color:rgba(99,102,241,.5); transform:translateY(-1px); }
+.profile-pick-card.active-profile { border-color:#6366f1; background:rgba(99,102,241,.15); box-shadow:0 0 16px rgba(99,102,241,.3); }
+
+.pick-avatar { font-size:2.2rem; width:52px; height:52px; background:rgba(255,255,255,.08); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.pick-info { flex:1; min-width:0; }
+.pick-name { font-size:1rem; font-weight:800; margin-bottom:2px; }
+.pick-rank { font-size:.78rem; color:rgba(255,255,255,.55); }
+.pick-xp   { font-size:.72rem; color:#a78bfa; }
+.pick-actions { display:flex; gap:6px; flex-shrink:0; }
+.pick-select-btn { background:linear-gradient(135deg,#6366f1,#4f46e5); border:none; border-radius:10px; padding:8px 14px; color:#fff; font-size:.82rem; font-weight:700; cursor:pointer; transition:transform .15s; }
+.pick-select-btn:hover { transform:scale(1.05); }
+.pick-delete-btn { background:rgba(248,113,113,.15); border:1px solid rgba(248,113,113,.3); border-radius:10px; padding:8px 10px; color:#f87171; font-size:.85rem; cursor:pointer; transition:background .2s; }
+.pick-delete-btn:hover { background:rgba(248,113,113,.3); }
+
+.btn-new-profile { width:100%; padding:14px; font-size:1rem; font-weight:700; border:2px dashed rgba(255,255,255,.2); border-radius:16px; background:transparent; color:rgba(255,255,255,.6); cursor:pointer; transition:all .2s; margin-bottom:16px; }
+.btn-new-profile:hover { border-color:rgba(99,102,241,.6); color:#a78bfa; background:rgba(99,102,241,.08); }
+
+/* ===== MODAL ===== */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; z-index:100; padding:16px; backdrop-filter:blur(4px); }
+.modal-box { background:#1a1a3e; border:1px solid rgba(99,102,241,.4); border-radius:24px; padding:28px 24px; width:100%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+.modal-box h3 { font-size:1.3rem; font-weight:800; margin-bottom:18px; text-align:center; }
+.modal-label { font-size:.82rem; color:rgba(255,255,255,.55); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.modal-input { width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:12px 14px; color:#fff; font-size:1rem; outline:none; margin-bottom:18px; }
+.modal-input:focus { border-color:#6366f1; }
+.avatar-grid { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+.avatar-btn { width:44px; height:44px; font-size:1.4rem; background:rgba(255,255,255,.07); border:2px solid transparent; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.avatar-btn:hover { background:rgba(255,255,255,.14); }
+.avatar-btn.selected { border-color:#6366f1; background:rgba(99,102,241,.25); box-shadow:0 0 10px rgba(99,102,241,.4); }
+.modal-actions { display:flex; gap:10px; }
+.modal-submit { flex:1; padding:13px; background:linear-gradient(135deg,#6366f1,#4f46e5); border:none; border-radius:12px; color:#fff; font-size:1rem; font-weight:700; cursor:pointer; transition:transform .15s; }
+.modal-submit:hover { transform:translateY(-1px); }
+.modal-cancel { padding:13px 18px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:12px; color:rgba(255,255,255,.7); font-size:1rem; cursor:pointer; }
+
+/* ===== AKTÍV PROFIL SÁV (start-screen tetején) ===== */
+.active-profile-bar {
+  display:flex; align-items:center; gap:10px;
+  background:rgba(99,102,241,.12); border:1px solid rgba(99,102,241,.25);
+  border-radius:14px; padding:10px 14px; margin-bottom:14px;
+}
+.active-profile-bar .ap-avatar { font-size:1.6rem; }
+.active-profile-bar .ap-info { flex:1; }
+.active-profile-bar .ap-name { font-size:.9rem; font-weight:800; }
+.active-profile-bar .ap-rank { font-size:.75rem; color:rgba(255,255,255,.5); }
+.btn-switch { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:8px; padding:6px 12px; color:rgba(255,255,255,.7); font-size:.78rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:background .2s; }
+.btn-switch:hover { background:rgba(255,255,255,.15); }
+
+
+/* ===================== PICKER SCREEN ===================== */
+.picker-hero { text-align:center; padding:28px 0 20px; }
+.picker-hero h2 { font-size:1.7rem; font-weight:900; margin-bottom:6px; }
+.picker-hero p { color:rgba(255,255,255,.5); font-size:.95rem; }
+
+#profiles-list { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+
+.profile-pick-card {
+  display:flex; align-items:center; gap:14px;
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12);
+  border-radius:18px; padding:14px 16px;
+  transition:all .2s;
+}
+.profile-pick-card:hover { background:rgba(255,255,255,.12); border-color:rgba(99,102,241,.5); transform:translateY(-1px); }
+.profile-pick-card.active-profile { border-color:#6366f1; background:rgba(99,102,241,.15); box-shadow:0 0 16px rgba(99,102,241,.3); }
+
+.pick-avatar { font-size:2.2rem; width:52px; height:52px; background:rgba(255,255,255,.08); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.pick-info { flex:1; min-width:0; }
+.pick-name { font-size:1rem; font-weight:800; margin-bottom:2px; }
+.pick-rank { font-size:.78rem; color:rgba(255,255,255,.55); }
+.pick-xp   { font-size:.72rem; color:#a78bfa; margin-top:1px; }
+.pick-actions { display:flex; gap:6px; flex-shrink:0; }
+.pick-select-btn { background:linear-gradient(135deg,#6366f1,#4f46e5); border:none; border-radius:10px; padding:8px 14px; color:#fff; font-size:.82rem; font-weight:700; cursor:pointer; transition:transform .15s; }
+.pick-select-btn:hover { transform:scale(1.05); }
+.pick-delete-btn { background:rgba(248,113,113,.15); border:1px solid rgba(248,113,113,.3); border-radius:10px; padding:8px 10px; color:#f87171; font-size:.85rem; cursor:pointer; transition:background .2s; }
+.pick-delete-btn:hover { background:rgba(248,113,113,.3); }
+
+.btn-new-profile { width:100%; padding:14px; font-size:1rem; font-weight:700; border:2px dashed rgba(255,255,255,.2); border-radius:16px; background:transparent; color:rgba(255,255,255,.6); cursor:pointer; transition:all .2s; margin-bottom:16px; }
+.btn-new-profile:hover { border-color:rgba(99,102,241,.6); color:#a78bfa; background:rgba(99,102,241,.08); }
+
+/* ===================== MODAL ===================== */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.75); display:flex; align-items:center; justify-content:center; z-index:100; padding:16px; backdrop-filter:blur(4px); }
+.modal-box { background:#1a1a3e; border:1px solid rgba(99,102,241,.4); border-radius:24px; padding:28px 24px; width:100%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+.modal-box h3 { font-size:1.3rem; font-weight:800; margin-bottom:18px; text-align:center; }
+.modal-label { font-size:.82rem; color:rgba(255,255,255,.55); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.modal-input { width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:12px 14px; color:#fff; font-size:1rem; outline:none; margin-bottom:18px; transition:border-color .2s; }
+.modal-input:focus { border-color:#6366f1; }
+.avatar-grid { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+.avatar-btn { width:44px; height:44px; font-size:1.4rem; background:rgba(255,255,255,.07); border:2px solid transparent; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.avatar-btn:hover { background:rgba(255,255,255,.14); }
+.avatar-btn.selected { border-color:#6366f1; background:rgba(99,102,241,.25); box-shadow:0 0 10px rgba(99,102,241,.4); }
+.modal-actions { display:flex; gap:10px; }
+.modal-submit { flex:1; padding:13px; background:linear-gradient(135deg,#6366f1,#4f46e5); border:none; border-radius:12px; color:#fff; font-size:1rem; font-weight:700; cursor:pointer; transition:transform .15s; }
+.modal-submit:hover { transform:translateY(-1px); }
+.modal-cancel { padding:13px 18px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:12px; color:rgba(255,255,255,.7); font-size:1rem; cursor:pointer; }
+
+/* ===================== AKTÍV PROFIL SÁV ===================== */
+.active-profile-bar { display:flex; align-items:center; gap:10px; background:rgba(99,102,241,.12); border:1px solid rgba(99,102,241,.25); border-radius:14px; padding:10px 14px; margin-bottom:14px; }
+.active-profile-bar .ap-avatar { font-size:1.6rem; }
+.active-profile-bar .ap-info { flex:1; }
+.active-profile-bar .ap-name { font-size:.9rem; font-weight:800; }
+.active-profile-bar .ap-rank { font-size:.75rem; color:rgba(255,255,255,.5); }
+.btn-switch { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:8px; padding:6px 12px; color:rgba(255,255,255,.7); font-size:.78rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:background .2s; }
+.btn-switch:hover { background:rgba(255,255,255,.15); }
